@@ -3,7 +3,7 @@
 [![verify](https://github.com/Miiduoa/demand-sensing-lite/actions/workflows/verify.yml/badge.svg)](https://github.com/Miiduoa/demand-sensing-lite/actions/workflows/verify.yml)
 
 作者：顧晉瑋（靜宜大學資訊管理學系）  
-> 授權：MIT｜資料：**合成／可重現種子**，非真實銷售資料
+授權：MIT｜資料：**合成／可重現種子**，非真實銷售資料
 
 ---
 
