@@ -14,6 +14,7 @@ def _simulate_policy(
     review: int = 1,
     days_of_cover: float = 7.0,
     initial_inventory: float | None = None,
+    reference_mean: float | None = None,
 ) -> dict:
     """Simulate daily inventory.
 
@@ -22,10 +23,16 @@ def _simulate_policy(
       - 'naive': reorder fixed qty = mean(train demand) when stock < mean * 3
     """
     n = len(demand)
-    if forecast is None:
-        forecast = np.full(n, float(np.mean(demand[: max(14, n // 4)])))
+    # Policy parameters and initial stock must be calibrated without using
+    # realized hold-out demand. compare_policies supplies a training-only
+    # reference mean produced by the forecasting stage.
+    if reference_mean is None:
+        raise ValueError("reference_mean must come from the training period")
+    mean_d = float(reference_mean)
 
-    mean_d = float(np.mean(demand[: max(14, n // 4)]))
+    if forecast is None:
+        forecast = np.full(n, mean_d)
+
     if initial_inventory is None:
         initial_inventory = mean_d * days_of_cover
 
@@ -97,8 +104,26 @@ def compare_policies(
         g = g.sort_values("date")
         demand = g["demand"].to_numpy(dtype=float)
         yhat = g["yhat"].to_numpy(dtype=float)
-        ss = _simulate_policy(demand, yhat, "ss", lead_time=lead_time, days_of_cover=days_of_cover)
-        nv = _simulate_policy(demand, None, "naive", lead_time=lead_time, days_of_cover=days_of_cover)
+        if "train_mean_demand" not in g.columns:
+            raise ValueError("pred_df must include train_mean_demand from the training period")
+        reference_mean = float(g["train_mean_demand"].iloc[0])
+
+        ss = _simulate_policy(
+            demand,
+            yhat,
+            "ss",
+            lead_time=lead_time,
+            days_of_cover=days_of_cover,
+            reference_mean=reference_mean,
+        )
+        nv = _simulate_policy(
+            demand,
+            None,
+            "naive",
+            lead_time=lead_time,
+            days_of_cover=days_of_cover,
+            reference_mean=reference_mean,
+        )
         rows.append(
             {
                 "sku": sku,
