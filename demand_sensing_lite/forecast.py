@@ -62,6 +62,11 @@ def time_split_forecast(
         yhat = np.clip(yhat, 0, None)
         part = te[["date", "sku", "demand"]].copy()
         part["yhat"] = yhat
+        # Inventory-policy calibration must use training-period demand only.
+        # Keeping this reference mean with the hold-out predictions prevents
+        # the downstream baseline and initial-stock setup from peeking at
+        # realized test demand.
+        part["train_mean_demand"] = float(tr["demand"].mean())
         preds.append(part)
 
         y_true = part["demand"].to_numpy(dtype=float)
