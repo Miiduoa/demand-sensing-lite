@@ -1,5 +1,7 @@
 # Demand Sensing Lite｜多 SKU 需求感知＋補貨模擬
 
+[![verify](https://github.com/Miiduoa/demand-sensing-lite/actions/workflows/verify.yml/badge.svg)](https://github.com/Miiduoa/demand-sensing-lite/actions/workflows/verify.yml)
+
 > 作者：顧晉瑋（靜宜大學 資訊管理學系）｜備審作品集  
 > 授權：MIT｜資料：**合成／可重現種子**，非真實銷售資料
 
